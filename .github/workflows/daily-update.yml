@@ -1,10 +1,14 @@
 name: Daily Task Automation
 
 on:
+  push:
+    branches:
+      - main
+
   workflow_dispatch:
 
   schedule:
-    - cron: '30 3 * * *'
+    - cron: "30 3 * * *"
 
 permissions:
   contents: write
