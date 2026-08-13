@@ -1,1 +1,40 @@
+name: Daily Task Automation
 
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: '30 8 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  daily-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update README
+        run: |
+          echo "Last Updated: $(TZ=Asia/Kolkata date '+%d %B %Y %I:%M:%S %p IST')" > /tmp/update.txt
+          sed -i '/^Last Updated:/d' README.md
+          cat /tmp/update.txt >> README.md
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit changes
+        run: |
+          git add README.md
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Daily automated update"
+            git push
+          fi
